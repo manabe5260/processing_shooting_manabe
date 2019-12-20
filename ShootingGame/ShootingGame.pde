@@ -3,13 +3,13 @@ public static Memory memory;
 Scene currentScene;
 
 void setup() {
-  size(800, 600);
+  size(1200, 900);
   background(0);
 
   imageMode(CENTER);
-  rectMode( CENTER );
-  ellipseMode( CENTER ); 
-  textAlign( CENTER );
+  rectMode(CENTER);
+  ellipseMode(CENTER);
+  textAlign(CENTER);
 
   smooth ();
 
@@ -19,10 +19,10 @@ void setup() {
 
 void draw() {
   background(0);
-  
+
   currentScene.move();
   currentScene.render();
-  
+
   if ( currentScene.returnFlag() == true ) {
     currentScene.finalize();
     currentScene = new GameScene();

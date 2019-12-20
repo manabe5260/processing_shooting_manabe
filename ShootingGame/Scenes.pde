@@ -1,6 +1,6 @@
 
 class Scene {
-  private boolean flagExit = false;
+  public boolean flagExit = false;
 
   public void initialize() {
   }
@@ -16,11 +16,30 @@ class Scene {
 }
 
 class TitleScene extends Scene {
+  private PImage titleImage;
+
+  public void initialize() {
+    titleImage = loadImage("titleImage.png");
+  }
+
+  public void move() {
+    if (keyPressed == true && key == ENTER) {
+      flagExit = true;
+    }
+  }
+
+  public void render() {
+    image(titleImage, width/2, height/2, width, height);
+  }
+
+  public void finalize() {
+    titleImage = null;
+  }
 }
 
 class GameScene extends Scene {
   private GameSystem gameSystem;
-  
+
   public void initialize() {
     gameSystem = new GameSystem();
   }
