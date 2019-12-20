@@ -1,3 +1,4 @@
+
 class BulletManager {
   private Bullet[] bulletArray;
   int maxBullets;
