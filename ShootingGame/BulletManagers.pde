@@ -36,8 +36,20 @@ class BulletManager {
   }
 
   private void reset(int i) {
-    if ( bulletArray[i].returnPositionX() < 0 || width < bulletArray[i].returnPositionX() ) {
-      bulletArray[i]=null;
+    if ( bulletArray[i].returnPosition().x < 0 || width < bulletArray[i].returnPosition().x ) {
+      bulletDelete(i);
+    }else if( bulletArray[i].returnPosition().y < 0 || height < bulletArray[i].returnPosition().y ) {
+      bulletDelete(i);
     }
+  }
+  
+  public void bulletDelete(int i){
+    bulletArray[i]=null;
+  }
+  
+  public PVector returnBulletPosition(int i){
+    PVector position = new PVector();
+    position = bulletArray[i].returnPosition();
+    return position;
   }
 }

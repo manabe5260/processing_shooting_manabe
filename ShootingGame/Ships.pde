@@ -31,6 +31,11 @@ class Ship {
 
   public void shoot() {
   }
+  
+  public PVector returnBulletPosition(int i){
+    PVector position = bulletManager.returnBulletPosition(i);
+    return position;
+  }
 }
 
 class PlayerShip extends Ship {

@@ -11,10 +11,12 @@ void setup() {
   ellipseMode(CENTER);
   textAlign(CENTER);
 
-  smooth ();
+  smooth();
 
-  currentScene = new GameScene();
+  currentScene = new TitleScene();
   currentScene.initialize();
+  
+  memory = new Memory();
 }
 
 void draw() {
@@ -23,9 +25,15 @@ void draw() {
   currentScene.move();
   currentScene.render();
 
-  if ( currentScene.returnFlag() == true ) {
+  if ( currentScene.returnFlag() != null ) {
     currentScene.finalize();
-    currentScene = new GameScene();
+    if (currentScene.returnFlag() == "title") {
+      currentScene = new TitleScene();
+    } else if (currentScene.returnFlag() == "game") {
+      currentScene = new GameScene();
+    } else if (currentScene.returnFlag() == "end") {
+      currentScene = new EndScene();
+    }    
     currentScene.initialize();
   }
 }
