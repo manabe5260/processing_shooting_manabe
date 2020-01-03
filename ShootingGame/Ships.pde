@@ -1,22 +1,29 @@
 
+/*
+Ship, PlayerShip, EnemyShip
+ */
+
 class Ship {
   protected float positionX, positionY;
-  protected float velocityX, velocityY;
+  protected float velocity;
   protected float sizeX, sizeY;
   protected color shipColor;
+  protected int hp, maxHp;
+  protected PImage img;
 
   BulletManager bulletManager;
 
-  Ship(float _positionX, float _positionY, float _velocityX, float _velocityY, float _sizeX, float _sizeY, color _shipColor) {
+  Ship(float _positionX, float _positionY, float _velocity, float _sizeX, float _sizeY, color _shipColor, int _hp, PImage _img) {
     positionX = _positionX;
     positionY = _positionY;
-    velocityX = _velocityX;
-    velocityY = _velocityY;
+    velocity = _velocity;
     sizeX = _sizeX;
     sizeY = _sizeY;
     shipColor = _shipColor;
+    hp = maxHp = _hp;
+    img = _img;
 
-    bulletManager = new BulletManager(30);
+    bulletManager = new BulletManager(30, _shipColor);
   }
 
   public void move() {
@@ -24,46 +31,55 @@ class Ship {
   }
 
   public void render() {
-    fill(shipColor);
-    rect(positionX, positionY, sizeX, sizeY);
+    image(img, positionX, positionY, sizeX, sizeY);
     bulletManager.render();
+    fill(shipColor);
+    rect(positionX, positionY+10, sizeX*hp/maxHp, sizeY/10);
   }
 
   public void shoot() {
   }
   
-  public PVector returnBulletPosition(int i){
+  public void damage(){
+    hp--;
+    println(hp);
+  }
+  
+  public boolean isAlive(){
+    boolean flag = true;
+    if(hp <= 0){
+      flag = false;
+    }
+    return flag;
+  }
+  
+  public PVector returnBulletPosition(int i) {
     PVector position = bulletManager.returnBulletPosition(i);
     return position;
   }
 }
 
 class PlayerShip extends Ship {
-  PlayerShip(float _positionX, float _positionY, float _velocityX, float _velocityY, float _sizeX, float _sizeY, color _shipColor) {
-    super(_positionX, _positionY,_velocityX, _velocityY, _sizeX, _sizeY, _shipColor);
+  PlayerShip(float _positionX, float _positionY, float _velocity, float _sizeX, float _sizeY, color _shipColor, int _hp, PImage _img) {
+    super(_positionX, _positionY, _velocity, _sizeX, _sizeY, _shipColor, _hp, _img);
   }
 
   public void move() {
-    if (keyPressed == true && key == 'w') {
-      positionY -= velocityY;
+    float dirX = (float)(positionX - mouseX) / dist(mouseX, mouseY, positionX, positionY);
+    float dirY = (float)(positionY - mouseY) / dist(mouseX, mouseY, positionX, positionY);
+    PVector direction = new PVector(dirX, dirY);
+    if (mouseX > 0 && mouseX < width && mouseY > 0 && mouseY < height) {
+      positionX -= direction.x*velocity;
+      positionY -= direction.y*velocity;
     }
-    if (keyPressed == true && key == 'a') {
-      positionX -= velocityX;
-    }
-    if (keyPressed == true && key == 's') {
-      positionY += velocityY;
-    }
-    if (keyPressed == true && key == 'd') {
-      positionX += velocityX;
-    }
-    if (keyPressed == true && key == ' ') {
-      shoot();
+    if (mousePressed == true) {
+      shoot(direction);
     }
     super.move();
   }
-
-  public void shoot() {
-    bulletManager.shoot(positionX, positionY, 20, 0);
+  
+  public void shoot(PVector direction) {
+    bulletManager.shoot(positionX, positionY, -20*direction.x, -20*direction.y);
   }
 
   public PVector returnPosition() {
@@ -72,34 +88,35 @@ class PlayerShip extends Ship {
   }
 }
 
-class EnemyShip extends Ship { 
-  EnemyShip(float _positionX, float _positionY, float _velocityX, float _velocityY, float _sizeX, float _sizeY, color _shipColor) {
-    super(_positionX, _positionY, _velocityX, _velocityY, _sizeX, _sizeY, _shipColor);
+class EnemyShip extends Ship {
+  
+  EnemyShip(float _positionX, float _positionY, float _velocity, float _sizeX, float _sizeY, color _shipColor, int _hp, PImage _img) {
+    super(_positionX, _positionY, _velocity, _sizeX, _sizeY, _shipColor, _hp, _img);
   }
 
   public void move(float targetX, float targetY, int isChase) {
     PVector direction = new PVector();
     direction.add(enemyAI(targetX, targetY, positionX, positionY));
-    positionX -= direction.x*velocityX*isChase;
-    positionY -= direction.y*velocityY*isChase;
+    positionX -= direction.x*velocity*isChase;
+    positionY -= direction.y*velocity*isChase;
 
     if ((millis()%1000)/100 == 0) {
-      shoot();
+      shoot(direction);
     }
-    
+
     super.move();
   }
 
   public PVector enemyAI(float bulletX, float bulletY, float shipX, float shipY) {
-    float dirX = (float)(shipX - bulletX) / dist(bulletX, bulletY, shipX, shipY);
-    float dirY = (float)(shipY - bulletY) / dist(bulletX, bulletY, shipX, shipY);
+    float dirX = (float) random(0.0, 1.0) * (shipX - bulletX) / dist(bulletX, bulletY, shipX, shipY);
+    float dirY = (float) random(0.0, 1.0) * (shipY - bulletY) / dist(bulletX, bulletY, shipX, shipY);
     PVector direction = new PVector(dirX, dirY);
-    
+
     return direction;
   }
 
-  public void shoot() {
-    float rad = random(-3.0, 3.0);
-    bulletManager.shoot(positionX, positionY, -10*cos(rad), -10*sin(rad));
+  public void shoot(PVector direction) {
+    float rad = random(-1.4, 1.4);
+    bulletManager.shoot(positionX, positionY, -direction.x-cos(rad), -direction.y-sin(rad));
   }
 }

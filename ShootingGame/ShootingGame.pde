@@ -1,17 +1,29 @@
 
+/*
+ShootingGameメイン関数
+パブリック変数, setup(), draw()
+
+素材
+タイトル、ゲーム、エンディング背景: いらすとや, https://www.irasutoya.com/
+アイコン: icooon-mono, https://icooon-mono.com/
+BGM: 魔王魂, https://maoudamashii.jokersounds.com/
+SE: 効果音ラボ, https://soundeffect-lab.info/
+*/
+
 public static Memory memory;
 Scene currentScene;
 
 void setup() {
-  size(1200, 900);
+  size(1200, 900, P3D);
   background(0);
-
+  smooth();
+  
   imageMode(CENTER);
   rectMode(CENTER);
   ellipseMode(CENTER);
   textAlign(CENTER);
 
-  smooth();
+  textFont(loadFont("font/AgencyFB-Reg-48.vlw"), 32);
 
   currentScene = new TitleScene();
   currentScene.initialize();
@@ -20,8 +32,6 @@ void setup() {
 }
 
 void draw() {
-  background(0);
-
   currentScene.move();
   currentScene.render();
 

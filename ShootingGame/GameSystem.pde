@@ -1,7 +1,11 @@
 
+/*
+GameSystem
+ */
+
 class GameSystem {
-  private float playerRadius = 5;
-  private float enemyRadius = 5;
+  final float playerRadius = 30, enemyRadius = 30;
+  final int playerHp = 6, enemyHp = 10;
   private int score = 0;
   private String status = "playing";
 
@@ -10,11 +14,11 @@ class GameSystem {
   private PlayerShip playerShip;
   private EnemyShip[] enemyShip = new EnemyShip[maxEnemyShips]; 
 
-  GameSystem() {
-    playerShip = new PlayerShip(width/3, height/2, 5, 5, 10, 10, color(255, 0, 0));
-    enemyShip[0] = new EnemyShip(width*2/3, height/2, 1, 1, 15, 15, color(150, 0, 230));
-    enemyShip[1] = new EnemyShip(width*2/3, height*1/3, 1, 1, 15, 15, color(100, 0, 240));
-    enemyShip[2] = new EnemyShip(width*2/3, height*2/3, 1, 1, 15, 15, color(0, 0, 255));
+  GameSystem(PImage _playerImage, PImage _enemyImage1, PImage _enemyImage2, PImage _enemyImage3) {
+    playerShip = new PlayerShip(width/4, height/2, 2, 50, 50, color(255, 150, 150), playerHp, _playerImage);
+    enemyShip[0] = new EnemyShip(width/2, height/4, 2, 50, 50, color(150, 200, 230), enemyHp, _enemyImage1);
+    enemyShip[1] = new EnemyShip(width*3/4, height/2, 2, 50, 50, color(100, 200, 240), enemyHp, _enemyImage2);
+    enemyShip[2] = new EnemyShip(width/2, height*3/4, 2, 50, 50, color(0, 200, 255), enemyHp, _enemyImage3);
   }
 
   public void move() {
@@ -29,6 +33,7 @@ class GameSystem {
     }
 
     hitBullet();
+    isAlives();
   }
 
   public void render() {
@@ -37,7 +42,7 @@ class GameSystem {
       if (enemyShip[i] != null)enemyShip[i].render();
     }
     fill(255);
-    textSize(30);
+    textSize(50);
     text(score, width/10, height/10);
   }
 
@@ -48,7 +53,7 @@ class GameSystem {
         if (playerShip != null && enemyShip[i] != null && enemyShip[i].bulletManager.bulletArray[j] != null) {
           if (dist(playerShip.positionX, playerShip.positionY, enemyShip[i].returnBulletPosition(j).x, enemyShip[i].returnBulletPosition(j).y) < playerRadius) {
             enemyShip[i].bulletManager.bulletDelete(j);
-            playerShip=null;
+            playerShip.damage();
           }
         }
       }
@@ -60,7 +65,7 @@ class GameSystem {
         if (playerShip != null && enemyShip[i] != null && playerShip.bulletManager.bulletArray[j] != null) {
           if (dist(enemyShip[i].positionX, enemyShip[i].positionY, playerShip.returnBulletPosition(j).x, playerShip.returnBulletPosition(j).y) < enemyRadius) {
             playerShip.bulletManager.bulletDelete(j);
-            enemyShip[i]=null;
+            enemyShip[i].damage();
             score++;
           }
         }
@@ -71,10 +76,21 @@ class GameSystem {
   public void scoreUpdate() {
   }
 
+  public void isAlives() {
+    if (playerShip != null && playerShip.isAlive() == false) {
+      playerShip = null;
+    }
+    for (int i = 0; i < 3; i++) {
+      if (enemyShip[i] != null && enemyShip[i].isAlive() == false) {
+        enemyShip[i] = null;
+      }
+    }
+  }
+
   public String isGameOver() {
     if (playerShip == null) {
       status = "lose";
-    } else if (score == maxEnemyShips) {
+    } else if (score >= maxEnemyShips * enemyHp) {
       status = "win";
     }
     return status;

@@ -1,4 +1,8 @@
 
+/*
+Bullet
+*/
+
 class Bullet {
   private float positionX, positionY;
   private float velocityX, velocityY;
@@ -16,8 +20,8 @@ class Bullet {
     positionY += velocityY;
   }
 
-  public void render() {
-    fill(bulletColor);
+  public void render(color _color) {
+    fill(_color);
     ellipse(positionX, positionY, radius, radius);
   }
 
