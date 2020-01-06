@@ -1,4 +1,8 @@
 
+/*
+Bullet
+*/
+
 class Bullet {
   private float positionX, positionY;
   private float velocityX, velocityY;
@@ -16,8 +20,8 @@ class Bullet {
     positionY += velocityY;
   }
 
-  public void render() {
-    fill(bulletColor);
+  public void render(color _color) {
+    fill(_color);
     ellipse(positionX, positionY, radius, radius);
   }
 
@@ -29,18 +33,13 @@ class Bullet {
     startTime = millis();
   }
   
-  public float returnPositionX(){
-    return positionX;
+  public PVector returnPosition(){
+    PVector position = new PVector(positionX, positionY);
+    return position;
   }
 }
 
-class PlayerBullet extends Bullet {
-  PlayerBullet(float _radius, color _bulletColor) {
-    super(_radius, _bulletColor);
-  }
-  public void shoot(float _positionX, float _positionY, float _velocityX, float _velocityY) {
-    super.shoot(_positionX, _positionY, _velocityX, _velocityY);
-  }
+class PlayerBullet {
 }
 
 class EnemyBullet {
