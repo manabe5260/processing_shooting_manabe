@@ -22,7 +22,7 @@ class Scene {
 class TitleScene extends Scene {
   private PImage titleImage, titleLogo;
   private Minim minimTitle = new Minim(this);
-  private AudioPlayer hitPlayer;
+  private AudioPlayer audioPlayer;
 
   public void initialize() {
     titleImage = loadImage("image/titleImage.jpg");

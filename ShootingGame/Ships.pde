@@ -14,14 +14,14 @@ class Ship {
   BulletManager bulletManager;
 
   Ship(float _positionX, float _positionY, float _velocity, float _sizeX, float _sizeY, color _shipColor, int _hp, PImage _img) {
-    positionX = _positionX;
-    positionY = _positionY;
-    velocity = _velocity;
-    sizeX = _sizeX;
-    sizeY = _sizeY;
-    shipColor = _shipColor;
+    positionX  = _positionX;
+    positionY  = _positionY;
+    velocity   = _velocity;
+    sizeX      = _sizeX;
+    sizeY      = _sizeY;
+    shipColor  = _shipColor;
     hp = maxHp = _hp;
-    img = _img;
+    img        = _img;
 
     bulletManager = new BulletManager(30, _shipColor);
   }
@@ -34,25 +34,25 @@ class Ship {
     image(img, positionX, positionY, sizeX, sizeY);
     bulletManager.render();
     fill(shipColor);
-    rect(positionX, positionY+10, sizeX*hp/maxHp, sizeY/10);
+    rect(positionX, positionY + 15, sizeX*hp/maxHp, sizeY/10);
   }
 
   public void shoot() {
   }
-  
-  public void damage(){
+
+  public void damage() {
     hp--;
     println(hp);
   }
-  
-  public boolean isAlive(){
+
+  public boolean isAlive() {
     boolean flag = true;
-    if(hp <= 0){
+    if (hp <= 0) {
       flag = false;
     }
     return flag;
   }
-  
+
   public PVector returnBulletPosition(int i) {
     PVector position = bulletManager.returnBulletPosition(i);
     return position;
@@ -77,7 +77,23 @@ class PlayerShip extends Ship {
     }
     super.move();
   }
-  
+
+  public void render() {
+    pushMatrix();
+    translate(positionX, positionY);
+    float rad = atan((mouseY - positionY)/(mouseX - positionX));
+    if (mouseX < positionX)rad += PI;
+
+    fill(shipColor);
+    rect(0, 15, sizeX*hp/maxHp, sizeY/10);
+
+    rotate(rad + PI/4);
+    image(img, 0, 0, sizeX, sizeY);
+    popMatrix();
+
+    bulletManager.render();
+  }
+
   public void shoot(PVector direction) {
     bulletManager.shoot(positionX, positionY, -20*direction.x, -20*direction.y);
   }
@@ -89,7 +105,7 @@ class PlayerShip extends Ship {
 }
 
 class EnemyShip extends Ship {
-  
+
   EnemyShip(float _positionX, float _positionY, float _velocity, float _sizeX, float _sizeY, color _shipColor, int _hp, PImage _img) {
     super(_positionX, _positionY, _velocity, _sizeX, _sizeY, _shipColor, _hp, _img);
   }
@@ -116,7 +132,6 @@ class EnemyShip extends Ship {
   }
 
   public void shoot(PVector direction) {
-    float rad = random(-1.4, 1.4);
-    bulletManager.shoot(positionX, positionY, -direction.x-cos(rad), -direction.y-sin(rad));
+    bulletManager.shoot(positionX, positionY, -direction.x+random(-1.0, 1.0), -direction.y+random(-1.0, 1.0));
   }
 }
