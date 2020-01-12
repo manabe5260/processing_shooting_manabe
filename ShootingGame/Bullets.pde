@@ -1,7 +1,7 @@
 
 /*
 Bullet
-*/
+ */
 
 class Bullet {
   private float positionX, positionY;
@@ -32,8 +32,8 @@ class Bullet {
     velocityY = _velocityY;
     startTime = millis();
   }
-  
-  public PVector returnPosition(){
+
+  public PVector returnPosition() {
     PVector position = new PVector(positionX, positionY);
     return position;
   }

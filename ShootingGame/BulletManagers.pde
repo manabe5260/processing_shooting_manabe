@@ -9,9 +9,9 @@ class BulletManager {
   private color bulletColor;
 
   BulletManager(int _maxBullets, color _bulletColor) {
-    maxBullets = _maxBullets;
+    maxBullets  = _maxBullets;
     bulletColor = _bulletColor;
-    
+
     bulletArray = new Bullet[maxBullets];
   }
 
@@ -34,7 +34,7 @@ class BulletManager {
 
   public void shoot( float _positionX, float _positionY, float _velocityX, float _velocityY ) {
     for ( int i = 0; i < maxBullets; i++ ) {
-      if ( bulletArray[i] == null ) {    
+      if ( bulletArray[i] == null ) {
         bulletArray[i] = new Bullet(10, color(0, 255, 0));
         bulletArray[i].shoot(_positionX, _positionY, _velocityX, _velocityY);
         break;
