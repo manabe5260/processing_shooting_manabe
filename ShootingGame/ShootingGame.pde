@@ -9,7 +9,8 @@ ShootingGameメイン関数
  BGM: 魔王魂, https://maoudamashii.jokersounds.com/
  SE: 効果音ラボ, https://soundeffect-lab.info/
  */
-
+ 
+//ライブラリのインポート
 import ddf.minim.*;
 import ddf.minim.analysis.*;
 import ddf.minim.effects.*;
@@ -18,9 +19,6 @@ import ddf.minim.spi.*;
 import ddf.minim.ugens.*;
 
 public Minim minim = new Minim(this);
-public AudioPlayer[] bgm = new AudioPlayer[3];
-public AudioPlayer hitPlayer, hitEnemy, shotPlayer, shotEnemy;
-
 public static Memory memory;
 Scene currentScene;
 
@@ -36,15 +34,6 @@ void setup() {
 
   textFont(loadFont("font/AgencyFB-Reg-48.vlw"), 32);
 
-  //音ファイルの読み込みがsetupででしかできない?
-  bgm[0] = minim.loadFile("music/bgm1.mp3");
-  bgm[1] = minim.loadFile("music/bgm2.mp3");
-  bgm[2] = minim.loadFile("music/bgm3.mp3");
-  hitPlayer  = minim.loadFile("music/hit1.mp3");
-  hitEnemy   = minim.loadFile("music/hit2.mp3");
-  shotPlayer = minim.loadFile("music/shot1.mp3");
-  shotEnemy  = minim.loadFile("music/shot4.mp3");
-
   currentScene = new TitleScene();
   currentScene.initialize();
 
@@ -54,7 +43,8 @@ void setup() {
 void draw() {
   currentScene.move();
   currentScene.render();
-
+  
+  //タグをもとにシーン遷移
   if ( currentScene.returnFlag() != null ) {
     currentScene.finalize();
     if (currentScene.returnFlag() == "title") {

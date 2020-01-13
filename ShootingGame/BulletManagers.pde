@@ -1,6 +1,7 @@
 
 /*
 BulletManager
+弾丸の制御
  */
 
 class BulletManager {
@@ -31,7 +32,7 @@ class BulletManager {
       }
     }
   }
-
+  //発射
   public void shoot( float _positionX, float _positionY, float _velocityX, float _velocityY ) {
     for ( int i = 0; i < maxBullets; i++ ) {
       if ( bulletArray[i] == null ) {
@@ -41,7 +42,7 @@ class BulletManager {
       }
     }
   }
-
+  //場外に出たら消去
   private void reset(int i) {
     if ( bulletArray[i].returnPosition().x < 0 || width < bulletArray[i].returnPosition().x ) {
       bulletDelete(i);
@@ -53,7 +54,7 @@ class BulletManager {
   public void bulletDelete(int i) {
     bulletArray[i]=null;
   }
-
+  //ヒット判定用
   public PVector returnBulletPosition(int i) {
     PVector position = new PVector();
     position = bulletArray[i].returnPosition();
