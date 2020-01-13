@@ -1,6 +1,7 @@
 
 /*
 Scene, TitleScene, GameScene, EndScene
+シーンたち
  */
 
 class Scene {
@@ -21,16 +22,14 @@ class Scene {
 
 class TitleScene extends Scene {
   private PImage titleImage, titleLogo;
-  private Minim minimTitle = new Minim(this);
-  private AudioPlayer hitPlayer;
+  private AudioPlayer bgm;
 
   public void initialize() {
     titleImage = loadImage("image/titleImage.jpg");
     titleLogo  = loadImage("image/titleLogo.png");
-    
-    
-    bgm[0] = minim.loadFile("music/bgm1.mp3");
-    bgm[0].play();
+
+    bgm = minim.loadFile("music/bgm1.mp3");
+    bgm.play();
   }
 
   public void move() {
@@ -49,25 +48,31 @@ class TitleScene extends Scene {
 
   public void finalize() {
     titleImage = titleLogo = null;
-    bgm[0].pause();
-    bgm[0].rewind();
+    bgm.pause();
+    bgm.rewind();
   }
 }
 
 class GameScene extends Scene {
   private PImage backGroundImage, playerImage, enemyImage1, enemyImage2, enemyImage3;
+  private AudioPlayer bgm, playerShotSE, enemyShotSE, playerHitSE, enemyHitSE;
   private GameSystem gameSystem;
 
   public void initialize() {
     backGroundImage = loadImage("image/titleImage.jpg");
     playerImage = loadImage("image/player.png");
     enemyImage1 = loadImage("image/ufo1.png");
-    enemyImage2 = loadImage("image/ufo2.png");
-    enemyImage3 = loadImage("image/ufo3.png");
+    enemyImage2 = loadImage("image/ufo3.png");
+    enemyImage3 = loadImage("image/ufo2.png");
+    bgm = minim.loadFile("music/bgm2.mp3");
+    playerShotSE = minim.loadFile("music/shot4.mp3");
+    enemyShotSE = minim.loadFile("music/shot1.mp3");
+    playerHitSE = minim.loadFile("music/hit1.mp3");
+    enemyHitSE = minim.loadFile("music/hit2.mp3");
 
-    gameSystem  = new GameSystem(playerImage, enemyImage1, enemyImage2, enemyImage3);
+    bgm.play();
 
-    bgm[1].play();
+    gameSystem  = new GameSystem(playerImage, enemyImage1, enemyImage2, enemyImage3, playerShotSE, enemyShotSE, playerHitSE, enemyHitSE);
   }
 
   public void move() {
@@ -85,17 +90,19 @@ class GameScene extends Scene {
   public void finalize() {
     backGroundImage = playerImage = enemyImage1 = enemyImage2 = enemyImage3 = null;
     gameSystem.saveResults();
-    bgm[1].pause();
-    bgm[1].rewind();
+    bgm.pause();
+    bgm.rewind();
   }
 }
 
 class EndScene extends Scene {
   private PImage endImage;
+  private AudioPlayer bgm;
 
   public void initialize() {
     endImage = loadImage("image/backGroundImage.jpg");
-    bgm[2].play();
+    bgm = minim.loadFile("music/bgm3.mp3");
+    bgm.play();
   }
 
   public void move() {
@@ -122,7 +129,7 @@ class EndScene extends Scene {
 
   public void finalize() {
     endImage = null;
-    bgm[2].pause();
-    bgm[2].rewind();
+    bgm.pause();
+    bgm.rewind();
   }
 }

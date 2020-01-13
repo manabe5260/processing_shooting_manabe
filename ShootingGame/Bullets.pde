@@ -1,6 +1,7 @@
 
 /*
 Bullet
+弾丸
  */
 
 class Bullet {
@@ -14,7 +15,7 @@ class Bullet {
     radius = _radius;
     bulletColor = _bulletColor;
   }
-
+  
   public void move() {
     positionX += velocityX;
     positionY += velocityY;
@@ -32,15 +33,9 @@ class Bullet {
     velocityY = _velocityY;
     startTime = millis();
   }
-
+  //ヒット判定用
   public PVector returnPosition() {
     PVector position = new PVector(positionX, positionY);
     return position;
   }
-}
-
-class PlayerBullet {
-}
-
-class EnemyBullet {
 }

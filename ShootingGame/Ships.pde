@@ -6,22 +6,25 @@ Ship, PlayerShip, EnemyShip
 class Ship {
   protected float positionX, positionY;
   protected float velocity;
-  protected float sizeX, sizeY;
+  protected float size;
+  protected float rate;
   protected color shipColor;
   protected int hp, maxHp;
   protected PImage img;
+  protected AudioPlayer shotSE;
 
   BulletManager bulletManager;
 
-  Ship(float _positionX, float _positionY, float _velocity, float _sizeX, float _sizeY, color _shipColor, int _hp, PImage _img) {
+  Ship(float _positionX, float _positionY, float _velocity, float _size, float _rate, color _shipColor, int _hp, PImage _img, AudioPlayer _shotSE) {
     positionX  = _positionX;
     positionY  = _positionY;
     velocity   = _velocity;
-    sizeX      = _sizeX;
-    sizeY      = _sizeY;
+    size       = _size;
+    rate       = _rate;
     shipColor  = _shipColor;
     hp = maxHp = _hp;
     img        = _img;
+    shotSE     = _shotSE;
 
     bulletManager = new BulletManager(30, _shipColor);
   }
@@ -31,10 +34,10 @@ class Ship {
   }
 
   public void render() {
-    image(img, positionX, positionY, sizeX, sizeY);
+    image(img, positionX, positionY, size, size);
     bulletManager.render();
     fill(shipColor);
-    rect(positionX, positionY + 15, sizeX*hp/maxHp, sizeY/10);
+    rect(positionX, positionY + 15, size*hp/maxHp, size/10);
   }
 
   public void shoot() {
@@ -42,7 +45,6 @@ class Ship {
 
   public void damage() {
     hp--;
-    println(hp);
   }
 
   public boolean isAlive() {
@@ -60,8 +62,10 @@ class Ship {
 }
 
 class PlayerShip extends Ship {
-  PlayerShip(float _positionX, float _positionY, float _velocity, float _sizeX, float _sizeY, color _shipColor, int _hp, PImage _img) {
-    super(_positionX, _positionY, _velocity, _sizeX, _sizeY, _shipColor, _hp, _img);
+  private float preMillis = 0;
+
+  PlayerShip(float _positionX, float _positionY, float _velocity, float _size, float _rate, color _shipColor, int _hp, PImage _img, AudioPlayer _shotSE) {
+    super(_positionX, _positionY, _velocity, _size, _rate, _shipColor, _hp, _img, _shotSE);
   }
 
   public void move() {
@@ -72,8 +76,9 @@ class PlayerShip extends Ship {
       positionX -= direction.x*velocity;
       positionY -= direction.y*velocity;
     }
-    if (mousePressed == true) {
+    if (mousePressed == true && (millis() - preMillis) > rate*1000) {
       shoot(direction);
+      preMillis = millis();
     }
     super.move();
   }
@@ -85,16 +90,18 @@ class PlayerShip extends Ship {
     if (mouseX < positionX)rad += PI;
 
     fill(shipColor);
-    rect(0, 15, sizeX*hp/maxHp, sizeY/10);
+    rect(0, 15, size*hp/maxHp, size/10);
 
     rotate(rad + PI/4);
-    image(img, 0, 0, sizeX, sizeY);
+    image(img, 0, 0, size, size);
     popMatrix();
 
     bulletManager.render();
   }
 
   public void shoot(PVector direction) {
+    shotSE.rewind();
+    shotSE.play();
     bulletManager.shoot(positionX, positionY, -20*direction.x, -20*direction.y);
   }
 
@@ -105,9 +112,46 @@ class PlayerShip extends Ship {
 }
 
 class EnemyShip extends Ship {
+  private float preMillis = 0;
 
-  EnemyShip(float _positionX, float _positionY, float _velocity, float _sizeX, float _sizeY, color _shipColor, int _hp, PImage _img) {
-    super(_positionX, _positionY, _velocity, _sizeX, _sizeY, _shipColor, _hp, _img);
+  EnemyShip(float _positionX, float _positionY, float _velocity, float _size, float _rate, color _shipColor, int _hp, PImage _img, AudioPlayer _shotSE) {
+    super(_positionX, _positionY, _velocity, _size, _rate, _shipColor, _hp, _img, _shotSE);
+  }
+
+  public void move(float targetX, float targetY, int isChase) {
+    PVector direction = new PVector();
+    direction.add(enemyAI(targetX, targetY, positionX, positionY));
+    positionX -= direction.x*velocity*isChase*random(0.5, 1.5);
+    positionY -= direction.y*velocity*isChase*random(0.5, 1.5);
+
+    if ((millis() - preMillis) > rate*1000) {
+      shoot(direction);
+      preMillis = millis();
+    }
+
+    super.move();
+  }
+
+  public void shoot(PVector direction) {
+    shotSE.rewind();
+    shotSE.play();
+    bulletManager.shoot(positionX, positionY, -direction.x+random(-0.5, 0.5), -direction.y+random(-0.5, 0.5));
+  }
+
+  public PVector enemyAI(float bulletX, float bulletY, float shipX, float shipY) {
+    float dirX = (float) (shipX - bulletX) / dist(bulletX, bulletY, shipX, shipY);
+    float dirY = (float) (shipY - bulletY) / dist(bulletX, bulletY, shipX, shipY);
+    PVector direction = new PVector(dirX, dirY);
+
+    return direction;
+  }
+}
+
+class BossEnemyShip extends EnemyShip {
+  private float preMillis = 0;
+
+  BossEnemyShip(float _positionX, float _positionY, float _velocity, float _size, float _rate, color _shipColor, int _hp, PImage _img, AudioPlayer _shotSE) {
+    super(_positionX, _positionY, _velocity, _size, _rate, _shipColor, _hp, _img, _shotSE);
   }
 
   public void move(float targetX, float targetY, int isChase) {
@@ -116,22 +160,17 @@ class EnemyShip extends Ship {
     positionX -= direction.x*velocity*isChase;
     positionY -= direction.y*velocity*isChase;
 
-    if ((millis()%1000)/100 == 0) {
+    if ((millis() - preMillis) > rate*1000) {
+      preMillis = millis();
+    } else if ((millis() - preMillis) > rate*900 && (millis() - preMillis) % 10 < 5) {
       shoot(direction);
     }
 
     super.move();
   }
 
-  public PVector enemyAI(float bulletX, float bulletY, float shipX, float shipY) {
-    float dirX = (float) random(0.0, 1.0) * (shipX - bulletX) / dist(bulletX, bulletY, shipX, shipY);
-    float dirY = (float) random(0.0, 1.0) * (shipY - bulletY) / dist(bulletX, bulletY, shipX, shipY);
-    PVector direction = new PVector(dirX, dirY);
-
-    return direction;
-  }
-
   public void shoot(PVector direction) {
-    bulletManager.shoot(positionX, positionY, -direction.x+random(-1.0, 1.0), -direction.y+random(-1.0, 1.0));
+    float rand = random(1.0, 3.0);
+    bulletManager.shoot(positionX, positionY, -direction.x*rand, -direction.y*rand);
   }
 }
